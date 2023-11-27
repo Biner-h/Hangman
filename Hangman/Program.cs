@@ -81,7 +81,7 @@ namespace Hangman
                 }
                 else
                 {
-                    Console.Write(" ");
+                    Console.Write("  ");
                 }
                 counter++;
             }
@@ -91,20 +91,80 @@ namespace Hangman
         private static void printLines(String randomWord)
         {
             Console.Write("\r");
-            foreach (char c in randomWord)
+            foreach (char _ in randomWord)
             {
                 Console.OutputEncoding = System.Text.Encoding.Unicode;
-                Console.Write("\u0305");
+                Console.Write("\u0305 ");
             }
         }
 
-        static void Main(string[] args)
+        static void Main()
         {
             Console.WriteLine("Velkommen til hangman :)");
             Console.WriteLine("--------------------------------------------");
             
             Random random = new Random();
-            List<String> wordsToGet = new List<String> { "tomat", "bøyeslange", "bananramme", "karaffel", "spekkdiplomat", "tentakkel", "opium", "perrong", "marmelade", "katamaran", "kahytt" };
+            List<String> wordsToGet = new List<String> 
+            { 
+                "tomat", "bøyeslange", "bananramme", "karaffel", "spekkdiplomat", 
+                "tentakkel", "opium", "perrong", "marmelade", "katamaran", "kahytt" 
+            };
+            int index = random.Next(wordsToGet.Count);
+            String randomWord = wordsToGet[index];
+
+            foreach (char _ in randomWord)
+            {
+                Console.Write("_ ");
+            }
+
+            int lengthOfWordToGuess = randomWord.Length;
+            int amountOfTimesWrong = 0;
+            List<char> currentLetterGuessed = new List<char>();
+            int currentLettersRight = 0;
+
+            while (amountOfTimesWrong != 6 && currentLettersRight != lengthOfWordToGuess)
+            {
+                Console.Write("\nBokstaver gjettet: ");
+                foreach (char letter in currentLetterGuessed)
+                {
+                    Console.Write(letter + " ");
+                }
+                Console.Write("\nGjett en bokstav: ");
+                char letterguessed = Console.ReadLine()[0];
+                if (currentLetterGuessed.Contains(letterguessed))
+                {
+                    Console.Write("\r\nDu har allerede gjettet bokstaven.");
+                    printHangman(amountOfTimesWrong);
+                    currentLettersRight = printWord(currentLetterGuessed, randomWord);
+                    printLines(randomWord);
+                }
+                else
+                {
+                    bool right = false;
+                    for (int i = 0; i < randomWord.Length; i++)
+                    {
+                        if (letterguessed == randomWord[i]) { right = true; }
+                    }
+                    if (right)
+                    {
+                        printHangman(amountOfTimesWrong);
+                        currentLetterGuessed.Add(letterguessed);
+                        currentLettersRight = printWord(currentLetterGuessed, randomWord);
+                        Console.Write("\r\n");
+                        printLines(randomWord);
+                    }
+                    else
+                    {
+                        amountOfTimesWrong++;
+                        currentLetterGuessed.Add(letterguessed);
+                        printHangman(amountOfTimesWrong);
+                        currentLettersRight = printWord(currentLetterGuessed, randomWord);
+                        Console.Write("\r\n");
+                        printLines(randomWord);
+                    }
+                }
+            }
+            Console.WriteLine("\r\nSpillet er over :)");
         }
     }
 }
